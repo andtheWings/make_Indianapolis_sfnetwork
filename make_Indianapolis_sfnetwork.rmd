@@ -1,0 +1,15 @@
+---
+title: "make_Indianapolis_sfnetwork"
+author: "Daniel P. Riggins"
+output: html_document
+---
+
+```{r}
+library(sf)
+library(sfnetworks)
+```
+
+```{r}
+Indy_Streets <- st_read("https://opendata.arcgis.com/datasets/fa9ec663cf25407a9b7645ff14334a7f_13.geojson")
+```
+
