@@ -7,9 +7,34 @@ output: html_document
 ```{r}
 library(sf)
 library(sfnetworks)
+library(maptools)
 ```
 
 ```{r}
 Indy_Streets <- st_read("https://opendata.arcgis.com/datasets/fa9ec663cf25407a9b7645ff14334a7f_13.geojson")
+```
+
+```{r}
+Indy_Streets <- Indy_Streets %>%
+    st_transform("+proj=tmerc +lat_0=39.3 +lon_0=-86.15 +k=1.000031 +x_0=240000 +y_0=36000 +ellps=GRS80 +units=m +no_defs")
+
+Indy_Streets
+```
+
+```{r}
+crs_7327 <- st_crs(7327)
+
+crs_7327$proj4string
+```
+
+
+```{r}
+Indy_Streets.sp <- as_Spatial(Indy_Streets)
+
+Indy_Streets.sp
+```
+
+```{r}
+Indy_Streets.linnet <- as.linnet.SpatialLines(Indy_Streets.sp)
 ```
 
