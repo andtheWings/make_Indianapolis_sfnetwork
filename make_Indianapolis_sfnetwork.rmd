@@ -8,27 +8,29 @@ output: html_document
 library(sf)
 library(sfnetworks)
 library(tidyverse)
+library(mapview)
 
 Indy_streets <- st_read("https://opendata.arcgis.com/datasets/fa9ec663cf25407a9b7645ff14334a7f_13.geojson") 
 
-one_way_Indiana_ave_streets <- Indy_streets %>%
+Indiana_ave_streets <- Indy_streets %>%
     # Crop to Indiana Ave District
     st_crop(c(xmin = -86.189233, ymin = 39.770670, xmax = -86.160613, ymax = 39.789350)) %>%
-    # Convert geometries from MULTILINESTRINGS to LINESTRINGS
+    # Convert all geometries to MULTILINESTRINGS
+    st_cast("MULTILINESTRING") %>%
+    # Convertt all geomeries to LINESTRING
     st_cast("LINESTRING") %>%
-    # Only keep directionality variable
-    select(ONE_WAY_DIR, geometry) %>%
-    # Filter for one-way streets
-    filter(ONE_WAY_DIR %in% c("EAST", "WEST", "NORTH", "SOUTH")) %>%
     # Convert to network object
     as_sfnetwork()
     
-edges <- one_way_Indiana_ave_streets %>%
+edges <- Indiana_ave_streets %>%
     activate("edges") %>%
     st_as_sf()
 
-nodes <- one_way_Indiana_ave_streets %>%
+nodes <- Indiana_ave_streets %>%
     activate("nodes") %>%
     st_as_sf()
+
+mapview(nodes, col.regions = "darkred", legend = NULL) + 
+  mapview(edges, color = "black", lwd = 2, legend = NULL)
 ```
 
