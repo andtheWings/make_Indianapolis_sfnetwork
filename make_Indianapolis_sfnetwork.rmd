@@ -9,7 +9,11 @@ library(sf)
 library(sfnetworks)
 library(tidyverse)
 library(mapview)
+```
 
+We'll start with downloading the data and then follow along with the `sfnetwork` package's "Network pre-processing and cleaning" vignette.
+
+```{r}
 Indy_streets <- st_read("https://opendata.arcgis.com/datasets/fa9ec663cf25407a9b7645ff14334a7f_13.geojson") 
 
 Indiana_ave_streets <- Indy_streets %>%
@@ -21,7 +25,11 @@ Indiana_ave_streets <- Indy_streets %>%
     st_cast("LINESTRING") %>%
     # Convert to network object
     as_sfnetwork()
-    
+
+Indiana_ave_streets
+```
+
+```{r}
 edges <- Indiana_ave_streets %>%
     activate("edges") %>%
     st_as_sf()
@@ -33,4 +41,45 @@ nodes <- Indiana_ave_streets %>%
 mapview(nodes, col.regions = "darkred", legend = NULL) + 
   mapview(edges, color = "black", lwd = 2, legend = NULL)
 ```
+
+## Common pre-processing tasks
+
+### Rounding coordinates
+
+Not necessary in this dataset
+
+### Dealing with one-way edges
+
+Working on this. See [github discussion](https://github.com/luukvdmeer/sfnetworks/discussions/145).
+
+## Network cleaning functions
+
+### Simplify network
+
+Not desired in this dataset.
+
+### Subdivide edges
+
+Not necessary when inspecting the dataset on mapview above.
+
+### Smooth pseudo nodes
+
+```{r}
+smoothed <- tidygraph::convert(Indiana_ave_streets, to_spatial_smooth)
+
+smoothed
+```
+```{r}
+smooth_edges <- smoothed %>%
+    activate("edges") %>%
+    st_as_sf()
+
+smooth_nodes <- smoothed %>%
+    activate("nodes") %>%
+    st_as_sf()
+
+mapview(smooth_nodes, col.regions = "darkred", legend = NULL) + 
+  mapview(smooth_edges, color = "black", lwd = 2, legend = NULL)
+```
+
 
